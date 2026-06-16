@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>주기율표 마스터</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-slate-950">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    const elements = [
+      { no: 1, symbol: 'H', name: '수소', row: 1, col: 1, desc: '우주에서 가장 흔한 원소' },
+      { no: 2, symbol: 'He', name: '헬륨', row: 1, col: 18, desc: '풍선을 띄우는 기체' },
+      { no: 3, symbol: 'Li', name: '리튬', row: 2, col: 1, desc: '배터리에 필수적' },
+      { no: 4, symbol: 'Be', name: '베릴륨', row: 2, col: 2, desc: '가볍고 단단함' },
+      { no: 5, symbol: 'B', name: '붕소', row: 2, col: 13, desc: '유리 제조에 사용' },
+      { no: 6, symbol: 'C', name: '탄소', row: 2, col: 14, desc: '생명체의 기본 요소' },
+      { no: 7, symbol: 'N', name: '질소', row: 2, col: 15, desc: '공기의 대부분 차지' },
+      { no: 8, symbol: 'O', name: '산소', row: 2, col: 16, desc: '호흡에 꼭 필요' },
+      { no: 9, symbol: 'F', name: '플루오린', row: 2, col: 17, desc: '충치 예방 성분' },
+      { no: 10, symbol: 'Ne', name: '네온', row: 2, col: 18, desc: '빛나는 간판에 사용' },
+      { no: 11, symbol: 'Na', name: '나트륨', row: 3, col: 1, desc: '소금의 주성분' },
+      { no: 12, symbol: 'Mg', name: '마그네슘', row: 3, col: 2, desc: '엽록소의 구성' },
+      { no: 13, symbol: 'Al', name: '알루미늄', row: 3, col: 13, desc: '음료 캔의 주재료' },
+      { no: 14, symbol: 'Si', name: '규소', row: 3, col: 14, desc: '반도체의 핵심' },
+      { no: 15, symbol: 'P', name: '인', row: 3, col: 15, desc: '성냥 머리에 사용' },
+      { no: 16, symbol: 'S', name: '황', row: 3, col: 16, desc: '화산에서 발견됨' },
+      { no: 17, symbol: 'Cl', name: '염소', row: 3, col: 17, desc: '수영장 소독 성분' },
+      { no: 18, symbol: 'Ar', name: '아르곤', row: 3, col: 18, desc: '전구 안의 기체' },
+      { no: 19, symbol: 'K', name: '칼륨', row: 4, col: 1, desc: '바나나에 풍부함' },
+      { no: 20, symbol: 'Ca', name: '칼슘', row: 4, col: 2, desc: '뼈와 치아 구성' }
+    ];
+
+    const formatName = (name) => {
+      if (name.length === 4) {
+        return (
+          <div className="flex flex-col items-center leading-none text-[18px]">
+            <span>{name.substring(0, 2)}</span>
+            <span>{name.substring(2)}</span>
+          </div>
+        );
+      }
+      return <span className="text-xl font-bold">{name}</span>;
+    };
+
+    function App() {
+      const [mode, setMode] = useState('stage1');
+      const [flipped, setFlipped] = useState({});
+
+      const toggleFlip = (index) => {
+        setFlipped(prev => ({ ...prev, [index]: !prev[index] }));
+      };
+
+      return (
+        <div className="min-h-screen bg-slate-950 text-white p-4">
+          <header className="flex flex-col items-center mb-8 max-w-7xl mx-auto">
+            <h1 className="text-4xl font-bold text-cyan-400 mb-6">주기율표 마스터</h1>
+            <div className="flex gap-4 w-full max-w-2xl">
+              {['stage1', 'stage2', 'stage3'].map((m, i) => (
+                <button 
+                  key={m} 
+                  onClick={() => { setMode(m); setFlipped({}); }} 
+                  className={`flex-1 py-4 rounded-2xl text-xl font-black transition-all transform hover:scale-105 active:scale-95 ${mode === m ? 'bg-cyan-500 shadow-[0_0_20px_rgba(6,182,212,0.5)] text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-2 border-slate-700'}`}
+                >
+                  {i + 1}단계 학습
+                </button>
+              ))}
+            </div>
+          </header>
+
+          <div className="grid grid-cols-18 gap-2 [perspective:1200px] w-full max-w-7xl mx-auto">
+            {elements.map((el, index) => (
+              <div 
+                key={index}
+                onClick={() => toggleFlip(index)}
+                style={{ gridRow: el.row, gridColumn: el.col }}
+                className="group relative cursor-pointer aspect-[3/4] w-full [transform-style:preserve-3d]"
+              >
+                <div className={`absolute inset-0 rounded-xl transition-all duration-500 [backface-visibility:hidden] flex flex-col items-center justify-center p-2 bg-slate-800 border-2 border-slate-700 hover:border-cyan-500 ${flipped[index] ? '[transform:rotateY(180deg)]' : ''}`}>
+                  <span className="font-bold text-slate-200 text-center leading-tight">
+                    {mode === 'stage1' ? formatName(el.name) : mode === 'stage2' ? <span className="text-3xl font-bold">{el.no}</span> : <span className="text-xs">{el.desc}</span>}
+                  </span>
+                </div>
+                <div className={`absolute inset-0 rounded-xl transition-all duration-500 [backface-visibility:hidden] flex flex-col items-center justify-center p-2 bg-cyan-900 border-2 border-cyan-700 [transform:rotateY(-180deg)] ${flipped[index] ? '[transform:rotateY(0deg)]' : ''}`}>
+                  <p className="text-2xl font-bold text-white">{el.symbol}</p>
+                  <p className="text-xs text-cyan-200 mt-1 font-bold">{el.name}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="mt-12 text-center text-slate-400 text-lg font-medium">
+            {mode === 'stage1' ? "1단계: 이름 보고 기호/이름 찾기" : mode === 'stage2' ? "2단계: 번호 보고 기호/이름 찾기" : "3단계: 특징 보고 기호/이름 찾기"}
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
